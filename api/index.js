@@ -1,15 +1,17 @@
 const jsonServer = require('json-server');
-const path = require('path');
-
 const server = jsonServer.create();
-const router = jsonServer.router(path.join(__dirname, '..', 'db.json'));
+const router = jsonServer.router('db.json');
 const middlewares = jsonServer.defaults();
 
-server.use(jsonServer.bodyParser);
-server.use(jsonServer.rewriter({
-  '/api/*': '/$1'
-}));
-server.use(router);
 server.use(middlewares);
+
+server.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
+server.use(router);
 
 module.exports = server;
