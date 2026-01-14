@@ -1,19 +1,17 @@
 const jsonServer = require('json-server');
 const server = jsonServer.create();
-const path = require('path');
-const router = jsonServer.router(path.join(__dirname, '../db.json'));
+const router = jsonServer.router('db.json');
 const middlewares = jsonServer.defaults();
 
 server.use(middlewares);
-
-server.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
-
+server.use(jsonServer.rewriter({
+  '/api/*': '/$1'
+}));
 server.use(router);
 
-module.exports = server;
+// مهم جداً لـ Vercel
+server.listen(3000, () => {
+  console.log('JSON Server is running');
+});
 
+module.exports = server;
